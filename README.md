@@ -186,8 +186,6 @@ The CLI uses the same products and rules as the test suite:
 └─ README.md
 ```
 
-> Structure may vary slightly; adjust filenames to match your codebase.
-
 ## Development Notes
 
 * Code is organized under `lib/` and `spec/`.
