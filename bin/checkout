@@ -15,15 +15,15 @@ require "optparse"
 
 USAGE = <<~TXT
   Usage:
-    bin/checkout GR1 SR1 CF1           # calcule le total pour les codes fournis
-    bin/checkout                        # démarre en mode interactif
+    bin/checkout GR1 SR1 CF1           # compute the total for the given codes
+    bin/checkout                        # start in interactive mode
 
   Options:
-    -h, --help                          # affiche cette aide
-    -r, --raw                           # affiche le total en nombre (BigDecimal) au lieu de £xx.xx
+    -h, --help                          # show this help
+    -r, --raw                           # print the raw total (BigDecimal) instead of £xx.xx
 
-  Mode interactif :
-    Entrez un code produit par ligne (ex: GR1). Commandes : total, basket, clear, help, quit/exit
+  Interactive mode:
+    Enter one product code per line (e.g., GR1). Commands: total, basket, clear, help, quit/exit
 TXT
 
 options = { raw: false }
@@ -33,7 +33,7 @@ OptionParser.new do |opts|
   opts.on("-r", "--raw")  { options[:raw] = true }
 end.parse!(ARGV)
 
-# Define products & rules (identiques aux tests/README)
+# Define products & rules (same as tests/README)
 products = [
   Product.new(code: "GR1", name: "Green tea",    price: "3.11"),
   Product.new(code: "SR1", name: "Strawberries", price: "5.00"),
@@ -59,22 +59,22 @@ def print_basket(items)
   puts "Basket: #{items.join(', ')}"
 end
 
-# Mode 1: codes passés en arguments
+# Mode 1: codes passed as arguments
 if ARGV.any?
   co = Checkout.new(pricing_rules: rules, catalog: catalog)
   begin
     ARGV.each { |code| co.scan(code) }
     print_total(co, raw: options[:raw])
   rescue ArgumentError => e
-    warn "Erreur: #{e.message}"
+    warn "Error: #{e.message}"
     exit 1
   end
   exit 0
 end
 
-# Mode 2: interactif
-puts "Supermarket Checkout — mode interactif"
-puts "Tape 'help' pour l’aide. Produits: GR1 (3.11), SR1 (5.00), CF1 (11.23)."
+# Mode 2: interactive
+puts "Supermarket Checkout — interactive mode"
+puts "Type 'help' for help. Products: GR1 (3.11), SR1 (5.00), CF1 (11.23)."
 co = Checkout.new(pricing_rules: rules, catalog: catalog)
 items = []
 
@@ -88,7 +88,7 @@ loop do
   when "", "help", "?","h"
     puts USAGE
   when "quit", "exit", "q"
-    puts "Au revoir!"
+    puts "Goodbye!"
     break
   when "total", "t"
     print_basket(items)
@@ -98,7 +98,7 @@ loop do
   when "clear", "c"
     co = Checkout.new(pricing_rules: rules, catalog: catalog)
     items.clear
-    puts "Panier vidé."
+    puts "Basket cleared."
   else
     # Treat as product code(s). Allow multiple tokens per line.
     tokens = cmd.split(/\s+/)
@@ -106,10 +106,10 @@ loop do
       tokens.each do |code|
         co.scan(code)
         items << code
-        puts "Ajouté: #{code}"
+        puts "Added: #{code}"
       end
     rescue ArgumentError => e
-      warn "Erreur: #{e.message} — tape 'basket' pour voir le panier ou 'help' pour l’aide."
+      warn "Error: #{e.message} — type 'basket' to see the basket or 'help' for help."
     end
   end
 end
